@@ -74,8 +74,8 @@ function Measure-Karma {
         'ListKoans' {
             Get-ChildItem -Path $env:PSKoans_Folder -Recurse -File -Filter '*.Koans.ps1' |
                 ForEach-Object {
-                    $_.BaseName -replace '\.Koans$'
-                }
+                $_.BaseName -replace '\.Koans$'
+            }
         }
         'Reset' {
             Write-Verbose "Reinitializing koan directory"
@@ -93,7 +93,7 @@ function Measure-Karma {
         "Default" {
             Clear-Host
 
-            Write-MeditationPrompt -Greeting
+            Show-MeditationPrompt -Greeting
 
             Write-Verbose 'Sorting koans...'
             $SortedKoanList = Get-ChildItem -Path $env:PSKoans_Folder -Recurse -Filter '*.Koans.ps1' |
@@ -103,7 +103,7 @@ function Measure-Karma {
                 } |
                 Get-Command { $_.FullName } |
                 Where-Object { $_.ScriptBlock.Attributes.Where{ $_.TypeID -match 'KoanAttribute' }.Count -gt 0 } |
-                Sort-Object { $_.ScriptBlock.Attributes.Where( {$_.TypeID -match 'KoanAttribute'}).Position }
+                Sort-Object { $_.ScriptBlock.Attributes.Where{ $_.TypeID -match 'KoanAttribute' }.Position }
 
             Write-Verbose 'Counting koans...'
             $TotalKoans = $SortedKoanList | Measure-Koan
@@ -157,8 +157,6 @@ function Measure-Karma {
                 if ($PSBoundParameters.ContainsKey('Topic')) {
                     $Meditation.Add('Topic', $Topic)
                 }
-
-                Write-MeditationPrompt @Meditation
             }
             else {
                 $Meditation = @{
@@ -170,9 +168,9 @@ function Measure-Karma {
                 if ($PSBoundParameters.ContainsKey('Topic')) {
                     $Meditation.Add('Topic', $Topic)
                 }
-
-                Write-MeditationPrompt @Meditation
             }
+
+            Show-MeditationPrompt @Meditation
         }
     }
 }
