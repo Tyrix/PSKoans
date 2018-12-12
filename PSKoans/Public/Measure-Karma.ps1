@@ -2,7 +2,7 @@
 
 class KoanTopics : IValidateSetValuesGenerator {
     [string[]] GetValidValues() {
-        $Values = Get-ChildItem -Path $env:PSKoans_Folder -Recurse -Filter '*.Koans.ps1' |
+        $Values = Get-PSKoanLocation | Get-ChildItem -Recurse -Filter '*.Koans.ps1' |
             Sort-Object -Property BaseName |
             ForEach-Object {
             $_.BaseName -replace '\.Koans$'
@@ -72,7 +72,7 @@ function Measure-Karma {
     )
     switch ($PSCmdlet.ParameterSetName) {
         'ListKoans' {
-            Get-ChildItem -Path $env:PSKoans_Folder -Recurse -File -Filter '*.Koans.ps1' |
+            Get-PSKoanLocation | Get-ChildItem -Recurse -File -Filter '*.Koans.ps1' |
                 ForEach-Object {
                 $_.BaseName -replace '\.Koans$'
             }
@@ -84,10 +84,10 @@ function Measure-Karma {
         'OpenFolder' {
             Write-Verbose "Opening koans folder"
             if (Get-Command -Name 'Code' -ErrorAction SilentlyContinue) {
-                Start-Process -FilePath 'code' -ArgumentList $env:PSKoans_Folder -NoNewWindow
+                Start-Process -FilePath 'code' -ArgumentList (Get-PSKoanLocation) -NoNewWindow
             }
             else {
-                Invoke-Item $env:PSKoans_Folder
+                Get-PSKoanLocation | Invoke-Item
             }
         }
         "Default" {
@@ -96,7 +96,7 @@ function Measure-Karma {
             Show-MeditationPrompt -Greeting
 
             Write-Verbose 'Sorting koans...'
-            $SortedKoanList = Get-ChildItem -Path $env:PSKoans_Folder -Recurse -Filter '*.Koans.ps1' |
+            $SortedKoanList = Get-PSKoanLocation | Get-ChildItem -Recurse -Filter '*.Koans.ps1' |
                 Where-Object {
                     -not $PSBoundParameters.ContainsKey('Topic') -or
                     $_.BaseName -replace '\.Koans$' -in $Topic
