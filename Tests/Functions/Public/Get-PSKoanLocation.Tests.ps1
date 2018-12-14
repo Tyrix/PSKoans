@@ -16,12 +16,19 @@ Describe 'Get-PSKoanLocation' {
     Context '$script:LibraryFolder is not defined' {
         BeforeAll {
             InModuleScope 'PSKoans' {
+                $LocationHolder = $script:LibraryFolder
                 Remove-Variable -Scope Script -Name 'LibraryFolder'
             }
         }
 
         It 'should throw an error when called' {
             { Get-PSKoanLocation } | Should -Throw -ExpectedMessage 'PSKoans folder location has not been defined'
+        }
+
+        AfterAll {
+            InModuleScope 'PSKoans' {
+                $script:LibraryFolder = $LocationHolder
+            }
         }
     }
 }

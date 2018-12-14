@@ -15,9 +15,7 @@ Describe 'Set-PSKoanLocation' {
         }
 
         It 'should set the module-scoped LibraryFolder variable' {
-            InModuleScope 'PSKoans' {
-                $script:LibraryFolder | Should -Be $Location
-            }
+            InModuleScope 'PSKoans' { $script:LibraryFolder } | Should -Be $Location
         }
     }
 
@@ -33,9 +31,7 @@ Describe 'Set-PSKoanLocation' {
         }
 
         It 'should set the module-scoped LibraryFolder variable' {
-            InModuleScope 'PSKoans' {
-                $script:LibraryFolder | Should -Be $Location
-            }
+            InModuleScope 'PSKoans' { $script:LibraryFolder } | Should -Be $Location
         }
     }
 
@@ -44,7 +40,7 @@ Describe 'Set-PSKoanLocation' {
         It 'should throw an error' {
             $Location = 'TestDrive:::::\\\XD^^*#&'
 
-            { Set-PSKoanLocation -Path $Location } | Should -Throw -ExpectedMessage 'not found'
+            { Set-PSKoanLocation -Path $Location } | Should -Throw -ExpectedMessage 'Path could not be resolved to a valid container'
         }
     }
 }
