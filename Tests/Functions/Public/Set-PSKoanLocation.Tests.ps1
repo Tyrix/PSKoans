@@ -4,7 +4,7 @@ Describe 'Set-PSKoanLocation' {
 
     Context 'Specified Folder Exists' {
         BeforeAll {
-            $Location = 'TestDrive:/Test/PSKoans'
+            $Location = 'TestDrive:{0}Test{0}PSKoans' -f [System.IO.Path]::DirectorySeparatorChar
             New-Item -Path $Location -ItemType Directory > $null
 
             Set-PSKoanLocation -Path $Location
@@ -17,11 +17,15 @@ Describe 'Set-PSKoanLocation' {
         It 'should set the module-scoped LibraryFolder variable' {
             InModuleScope 'PSKoans' { $script:LibraryFolder } | Should -Be $Location
         }
+
+        AfterAll {
+            Remove-Item -Path $Location
+        }
     }
 
     Context 'Specified Folder Doesn''t Exist' {
         BeforeAll {
-            $Location = 'TestDrive:/Test/PSKoans'
+            $Location = 'TestDrive:{0}Test{0}PSKoans' -f [System.IO.Path]::DirectorySeparatorChar
 
             Set-PSKoanLocation -Path $Location
         }

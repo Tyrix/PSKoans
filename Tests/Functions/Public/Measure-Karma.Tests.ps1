@@ -10,6 +10,11 @@ Describe 'Measure-Karma' {
                 Mock Show-MeditationPrompt -ModuleName 'PSKoans' {}
                 Mock Invoke-Koan -ModuleName 'PSKoans' {}
                 Mock Measure-Koan -ModuleName 'PSKoans' {}
+
+                $TestLocation = 'TestDrive:{0}PSKoans' -f [System.IO.Path]::DirectorySeparatorChar
+                Set-PSKoanLocation -Path $TestLocation
+
+                Initialize-KoanDirectory -Confirm:$false
             }
 
             It 'should not produce output' {
@@ -35,6 +40,16 @@ Describe 'Measure-Karma' {
 
                 Assert-MockCalled Invoke-Koan -Times ($ValidKoans.Count)
             }
+        }
+
+        Context 'With Nonexistent Koans Folder' {
+            BeforeAll {
+                $TestLocation = 'TestDrive:{0}PSKoans' -f [System.IO.Path]::DirectorySeparatorChar
+                Set-PSKoanLocation -Path $TestLocation
+                Remove-Item -Path $TestLocation -Recurse -Force
+            }
+
+            It
         }
 
         Context 'With -Reset Switch' {

@@ -4,7 +4,7 @@ Describe 'Get-PSKoanLocation' {
 
     Context '$script:LibraryFolder is defined' {
         BeforeAll {
-            $TestLocation = 'TestDrive:/PSKoans'
+            $TestLocation = 'TestDrive:{0}PSKoans' -f [System.IO.Path]::DirectorySeparatorChar
             Set-PSKoanLocation -Path $TestLocation
         }
 
@@ -15,8 +15,8 @@ Describe 'Get-PSKoanLocation' {
 
     Context '$script:LibraryFolder is not defined' {
         BeforeAll {
+            $OldLocation = InModuleScope 'PSKoans' { $script:LibraryFolder }
             InModuleScope 'PSKoans' {
-                $LocationHolder = $script:LibraryFolder
                 Remove-Variable -Scope Script -Name 'LibraryFolder'
             }
         }
@@ -26,9 +26,7 @@ Describe 'Get-PSKoanLocation' {
         }
 
         AfterAll {
-            InModuleScope 'PSKoans' {
-                $script:LibraryFolder = $LocationHolder
-            }
+            Set-PSKoanLocation -Path $OldLocation
         }
     }
 }
