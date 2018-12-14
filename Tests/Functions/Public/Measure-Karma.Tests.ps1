@@ -9,7 +9,6 @@ Describe 'Measure-Karma' {
                 Mock Clear-Host {}
                 Mock Show-MeditationPrompt -ModuleName 'PSKoans' {}
                 Mock Invoke-Koan -ModuleName 'PSKoans' {}
-                Mock Measure-Koan -ModuleName 'PSKoans' {}
 
                 $TestLocation = 'TestDrive:{0}PSKoans' -f [System.IO.Path]::DirectorySeparatorChar
                 Set-PSKoanLocation -Path $TestLocation
@@ -29,10 +28,6 @@ Describe 'Measure-Karma' {
                 Assert-MockCalled Show-MeditationPrompt -Times 2
             }
 
-            It 'should count the koans' {
-                Assert-MockCalled Measure-Koan
-            }
-
             It 'should Invoke-Pester on each of the koans' {
                 $ValidKoans = Get-PSKoanLocation | Get-ChildItem -Recurse -Filter '*.Koans.ps1' |
                     Get-Command {$_.FullName} |
@@ -42,14 +37,28 @@ Describe 'Measure-Karma' {
             }
         }
 
-        Context 'With Nonexistent Koans Folder' {
+        Context 'With Nonexistent Koans Folder / No Koans Found' {
             BeforeAll {
-                $TestLocation = 'TestDrive:{0}PSKoans' -f [System.IO.Path]::DirectorySeparatorChar
-                Set-PSKoanLocation -Path $TestLocation
-                Remove-Item -Path $TestLocation -Recurse -Force
+                Mock Clear-Host {}
+                Mock Show-MeditationPrompt -ModuleName 'PSKoans' {}
+                Mock Measure-Koan -ModuleName 'PSKoans' {}
+                Mock Get-Koan -ModuleName 'PSKoans' {}
+                Mock Initialize-KoanDirectory -ModuleName 'PSKoans' { throw 'Prevent recursion' }
+                Mock Write-Warning
             }
 
-            It
+            It 'should attempt to populate koans and then recurse to reassess' {
+                { Measure-Karma } | Should -Throw -ExpectedMessage 'Prevent recursion'
+            }
+
+            It 'should display only the greeting prompt' {
+                Assert-MockCalled Clear-Host
+                Assert-MockCalled Show-MeditationPrompt -Times 1
+            }
+
+            It 'should display a warning before initiating a reset' {
+                Assert-MockCalled Write-Warning
+            }
         }
 
         Context 'With -Reset Switch' {
